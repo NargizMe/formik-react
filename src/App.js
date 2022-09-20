@@ -1,24 +1,54 @@
-import logo from './logo.svg';
 import './App.css';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Formik, Form, Field } from 'formik';
 
 function App() {
+  const [category, setCategory] = useState([]);
+  const [categoryId, setCategoryId] = useState('');
+
+  useEffect(() => {
+    (async() => {
+      const result = await axios('https://northwind.vercel.app/api/categories');
+      setCategory(result.data);
+    })()
+  }, [])
+
+  function handleOptionClick(e){
+    setCategoryId(e.target.value)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <div>
+     <h1>Add Product Form</h1>
+     <select onChange={(e) =>handleOptionClick(e)}>
+     {
+        category.map((el) => {
+          return <option value={el.id} key={el.id}>{el.name}</option>
+        })
+     }
+     </select>
+     <Formik
+       initialValues={{ name: '', categoryId: '', unitPrice: '', unitsInStock: '', unitsOnOrder: '', discontinued: '',reorderLevel: '', quantityPerUnit: '' }}
+       onSubmit={async(values) => {
+        await axios.post('https://northwind.vercel.app/api/products', values)
+       }}
+     >
+      <Form>
+        <Field type="text" name="name" placeholder = 'name' />
+        <Field type="text" name="categoryId" value={categoryId} placeholder = 'categoryId' />
+        <Field type="text" name="unitPrice" placeholder = 'unitPrice'/>
+        <Field type="text" name="unitsInStock" placeholder = 'unitsInStock' />
+        <Field type="text" name="unitsOnOrder" placeholder = 'unitsOnOrder' />
+        <Field type="text" name="discontinued" placeholder = 'discontinued' />
+        <Field type="text" name="reorderLevel" placeholder = 'reorderLevel' />
+        <Field type="text" name="quantityPerUnit" placeholder = 'quantityPerUnit' />
+        <button type="submit" >
+          Submit
+        </button>
+      </Form>
+     </Formik>
+   </div>
   );
 }
 
