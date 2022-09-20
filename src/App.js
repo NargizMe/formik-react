@@ -15,29 +15,31 @@ function App() {
   }, [])
 
   function handleOptionClick(e){
-    setCategoryId(e.target.value)
+    // setCategoryId(e.target.value)
+    // console.log(va);
   }
 
   return (
     <div>
      <h1>Add Product Form</h1>
      <h2>{categoryId}</h2>
-     <select onChange={(e) =>handleOptionClick(e)}>
-     {
-        category.map((el) => {
-          return <option value={el.id} key={el.id}>{el.name}</option>
-        })
-     }
-     </select>
      <Formik
-       initialValues={{ name: '', categoryId: '', unitPrice: '', unitsInStock: '', unitsOnOrder: '', discontinued: '',reorderLevel: '', quantityPerUnit: '' }}
+       initialValues={{ name: '', categoryId: '', unitPrice: '', unitsInStock: '', unitsOnOrder: '', discontinued: '',reorderLevel: '', quantityPerUnit: '', categoryId: '' }}
        onSubmit={async(values) => {
         await axios.post('https://northwind.vercel.app/api/products', values)
+        setCategoryId(values.categoryId);
+        console.log(values);
        }}
      >
       <Form>
+        <Field as="select" name="categoryId">
+          {
+            category.map((el) => {
+              return <option value={el.id} key={el.id}>{el.name}</option>
+            })
+          }
+        </Field>
         <Field type="text" name="name" placeholder = 'name' />
-        <Field type="text" name="categoryId" value={categoryId} placeholder = 'categoryId' />
         <Field type="text" name="unitPrice" placeholder = 'unitPrice'/>
         <Field type="text" name="unitsInStock" placeholder = 'unitsInStock' />
         <Field type="text" name="unitsOnOrder" placeholder = 'unitsOnOrder' />
